@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart Details - CyberSecure SOC</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">CyberSecure SOC</div>
+            <ul>
+                <li><a href="/">← Back to Dashboard</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="chart-details-page">
+            <div class="back-button">
+                <a href="/" class="btn-back">← Back to Dashboard</a>
+            </div>
+            
+            <div class="chart-detail-container">
+                <div class="chart-info">
+                    <h1 id="chartTitle">Chart Details</h1>
+                    <div class="chart-status-large">
+                        <span id="chartStatus">Loading...</span>
+                    </div>
+                </div>
+                
+                <div class="chart-display">
+                    <canvas id="detailChart"></canvas>
+                </div>
+                
+                <div class="chart-explanation">
+                    <div class="explanation-card">
+                        <h2>📊 What This Chart Shows</h2>
+                        <p id="chartDescription">Loading chart information...</p>
+                    </div>
+                    
+                    <div class="explanation-card">
+                        <h2>🔍 How to Read This Data</h2>
+                        <div id="chartGuide">Loading guide...</div>
+                    </div>
+                    
+                    <div class="explanation-card">
+                        <h2>⚠️ What to Watch For</h2>
+                        <div id="chartWarnings">Loading warnings...</div>
+                    </div>
+                    
+                    <div class="explanation-card">
+                        <h2>💡 Key Insights</h2>
+                        <div id="chartInsights">Loading insights...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Get chart type from URL path
+        const path = window.location.pathname;
+        const chartType = path.split('/').pop();
+        console.log('Full path:', path);
+        console.log('Chart type extracted:', chartType);
+        
+        // Chart information database
+        const chartInfo = {
+            'threat-timeline': {
+                title: '🔥 Threat Activity Timeline',
+                status: 'LIVE - Updates every 30 seconds',
+                description: 'This chart shows how many cyber attacks we detected over time. Think of it like a heart monitor for your computer security - it shows the "pulse" of threats trying to attack your system.',
+                guide: `
+                    <ul>
+                        <li><strong>Red Line (Brute Force):</strong> Shows password attack attempts - when hackers try to guess passwords</li>
+                        <li><strong>Orange Line (Malware):</strong> Shows virus and malicious software detections</li>
+                        <li><strong>Yellow Line (Data Theft):</strong> Shows attempts to steal your important files</li>
+                        <li><strong>Higher peaks = More attacks</strong> at that time</li>
+                        <li><strong>Flat lines = Quiet periods</strong> with fewer threats</li>
+                    </ul>
+                `,
+                warnings: `
+                    <ul>
+                        <li>🚨 <strong>Sudden spikes:</strong> If you see a big jump, it means many attacks happened at once</li>
+                        <li>⚠️ <strong>Consistent high activity:</strong> If lines stay high, you're under constant attack</li>
+                        <li>🔍 <strong>Unusual patterns:</strong> Attacks usually happen during business hours - nighttime spikes are suspicious</li>
+                    </ul>
+                `,
+                insights: `
+                    <ul>
+                        <li>💼 <strong>Business Hours:</strong> Most attacks happen 9 AM - 5 PM when people are working</li>
+                        <li>🌙 <strong>Night Attacks:</strong> Automated attacks often happen at night when IT staff isn't watching</li>
+                        <li>📈 <strong>Trending Up:</strong> If attacks are increasing over days/weeks, you need stronger security</li>
+                        <li>✅ <strong>Low Activity:</strong> Consistent low numbers mean your security is working well</li>
+                    </ul>
+                `
+            },
+            'threat-distribution': {
+                title: '🎯 Threat Distribution',
+                status: 'Real-time Analysis',
+                description: 'This pie chart shows what types of cyber attacks are targeting your system. It\'s like a breakdown of "what kind of trouble" you\'re facing - whether it\'s password attacks, viruses, data theft, or insider threats.',
+                guide: `
+                    <ul>
+                        <li><strong>Bigger slices = More common attacks</strong></li>
+                        <li><strong>Red slice:</strong> Brute force attacks (password guessing)</li>
+                        <li><strong>Orange slice:</strong> Malware and viruses</li>
+                        <li><strong>Yellow slice:</strong> Data theft attempts</li>
+                        <li><strong>Green slice:</strong> Insider threats (employees doing bad things)</li>
+                    </ul>
+                `,
+                warnings: `
+                    <ul>
+                        <li>🚨 <strong>One slice dominates:</strong> If one type is over 50%, you have a focused attack</li>
+                        <li>⚠️ <strong>Insider threats growing:</strong> Green slice getting bigger means employee problems</li>
+                        <li>🔍 <strong>New threat types:</strong> New colors appearing means new attack methods</li>
+                    </ul>
+                `,
+                insights: `
+                    <ul>
+                        <li>🎯 <strong>Focus Defense:</strong> Put more security on the biggest slice</li>
+                        <li>📊 <strong>Balanced Threats:</strong> Equal slices mean you need all-around protection</li>
+                        <li>🔄 <strong>Changes Over Time:</strong> Watch how slices change to spot new trends</li>
+                        <li>👥 <strong>Industry Comparison:</strong> Your mix should match your business type</li>
+                    </ul>
+                `
+            },
+            'system-performance': {
+                title: '📈 System Performance',
+                status: 'Live Monitoring',
+                description: 'This radar chart shows how well your computer systems are running. Think of it like a health checkup for your technology - it measures different aspects like speed, memory, network, and security.',
+                guide: `
+                    <ul>
+                        <li><strong>Bigger shape = Better performance</strong></li>
+                        <li><strong>CPU:</strong> How fast your computer processor is working</li>
+                        <li><strong>Memory:</strong> How much computer memory is being used</li>
+                        <li><strong>Network:</strong> How fast your internet connection is</li>
+                        <li><strong>Disk:</strong> How much storage space is available</li>
+                        <li><strong>Security:</strong> How strong your protection systems are</li>
+                        <li><strong>Uptime:</strong> How long systems have been running without problems</li>
+                    </ul>
+                `,
+                warnings: `
+                    <ul>
+                        <li>🚨 <strong>Small areas:</strong> Values below 50% mean that system needs attention</li>
+                        <li>⚠️ <strong>Uneven shape:</strong> One area much smaller means a bottleneck</li>
+                        <li>🔍 <strong>Security drops:</strong> Security score going down means vulnerabilities</li>
+                    </ul>
+                `,
+                insights: `
+                    <ul>
+                        <li>⚡ <strong>Optimal Range:</strong> All areas should be 70-90% for best performance</li>
+                        <li>🎯 <strong>Balance:</strong> Even shape means well-balanced system</li>
+                        <li>📊 <strong>Trends:</strong> Watch for gradual decreases over time</li>
+                        <li>🔧 <strong>Maintenance:</strong> Regular dips might indicate scheduled maintenance</li>
+                    </ul>
+                `
+            },
+            'geographic': {
+                title: '🌍 Geographic Threats',
+                status: 'Global Monitoring',
+                description: 'This bar chart shows which countries the cyber attacks are coming from. It\'s like a world map of "bad guys" - helping you understand where the threats to your system originate.',
+                guide: `
+                    <ul>
+                        <li><strong>Taller bars = More attacks from that country</strong></li>
+                        <li><strong>Different colors:</strong> Each country has its own color</li>
+                        <li><strong>Numbers show:</strong> How many attacks came from each location</li>
+                        <li><strong>Countries listed:</strong> From highest to lowest threat levels</li>
+                    </ul>
+                `,
+                warnings: `
+                    <ul>
+                        <li>🚨 <strong>Sudden spikes:</strong> New country appearing with high attacks</li>
+                        <li>⚠️ <strong>Unexpected sources:</strong> Attacks from countries you don't do business with</li>
+                        <li>🔍 <strong>Pattern changes:</strong> Shifts in which countries are attacking most</li>
+                    </ul>
+                `,
+                insights: `
+                    <ul>
+                        <li>🌐 <strong>Common Sources:</strong> Some countries are known for hosting cyber criminals</li>
+                        <li>🎯 <strong>Targeted Blocking:</strong> You can block traffic from high-threat countries</li>
+                        <li>📊 <strong>Business Impact:</strong> Consider if you need access from these countries</li>
+                        <li>🔒 <strong>Extra Security:</strong> Add more protection for traffic from high-risk areas</li>
+                    </ul>
+                `
+            },
+            'network-traffic': {
+                title: '⚡ Network Traffic Analysis',
+                status: 'LIVE STREAM',
+                description: 'This chart shows how much data is flowing in and out of your network. Think of it like monitoring the traffic on a highway - it shows how busy your internet connection is and helps spot unusual activity.',
+                guide: `
+                    <ul>
+                        <li><strong>Green line (Inbound):</strong> Data coming INTO your network</li>
+                        <li><strong>Blue line (Outbound):</strong> Data going OUT of your network</li>
+                        <li><strong>Higher lines = More data transfer</strong></li>
+                        <li><strong>MB/s:</strong> Megabytes per second (speed of data)</li>
+                        <li><strong>Time:</strong> Shows activity over the last few minutes</li>
+                    </ul>
+                `,
+                warnings: `
+                    <ul>
+                        <li>🚨 <strong>Massive spikes:</strong> Sudden huge increases might be attacks or data theft</li>
+                        <li>⚠️ <strong>Unusual outbound:</strong> Lots of data leaving could mean information is being stolen</li>
+                        <li>🔍 <strong>Off-hours activity:</strong> High traffic at night when no one should be working</li>
+                    </ul>
+                `,
+                insights: `
+                    <ul>
+                        <li>📈 <strong>Normal Patterns:</strong> Traffic should match your business hours</li>
+                        <li>⚖️ <strong>Balance:</strong> Usually more data comes in than goes out</li>
+                        <li>🕐 <strong>Peak Times:</strong> Highest traffic typically 10 AM - 3 PM</li>
+                        <li>📊 <strong>Baseline:</strong> Learn your normal levels to spot problems</li>
+                    </ul>
+                `
+            },
+            'security-score': {
+                title: '🛡️ Security Score',
+                status: 'Current: 94%',
+                description: 'This circular chart shows your overall security health as a percentage. Think of it like a report card for your cybersecurity - the higher the number, the better protected you are.',
+                guide: `
+                    <ul>
+                        <li><strong>Percentage:</strong> Your overall security strength (0-100%)</li>
+                        <li><strong>Green area:</strong> Shows your current security level</li>
+                        <li><strong>Gray area:</strong> Shows room for improvement</li>
+                        <li><strong>90-100%:</strong> Excellent security</li>
+                        <li><strong>70-89%:</strong> Good security</li>
+                        <li><strong>Below 70%:</strong> Needs improvement</li>
+                    </ul>
+                `,
+                warnings: `
+                    <ul>
+                        <li>🚨 <strong>Score dropping:</strong> If it goes down, new vulnerabilities were found</li>
+                        <li>⚠️ <strong>Below 80%:</strong> You have security gaps that need fixing</li>
+                        <li>🔍 <strong>Sudden changes:</strong> Big drops mean something important broke</li>
+                    </ul>
+                `,
+                insights: `
+                    <ul>
+                        <li>🎯 <strong>Target Score:</strong> Aim for 85% or higher for good protection</li>
+                        <li>📊 <strong>Industry Average:</strong> Most businesses score 75-85%</li>
+                        <li>🔧 <strong>Improvement:</strong> Each 5% increase significantly reduces risk</li>
+                        <li>⚡ <strong>Maintenance:</strong> Scores naturally decrease without regular updates</li>
+                    </ul>
+                `
+            }
+        };
+        
+        // Initialize the detail page
+        function initDetailPage() {
+            console.log('Available chart types:', Object.keys(chartInfo));
+            console.log('Looking for chart type:', chartType);
+            
+            const info = chartInfo[chartType];
+            if (!info) {
+                console.error('Chart info not found for:', chartType);
+                document.getElementById('chartTitle').textContent = 'Chart Not Found: ' + chartType;
+                document.getElementById('chartDescription').textContent = 'Available types: ' + Object.keys(chartInfo).join(', ');
+                return;
+            }
+            
+            console.log('Found chart info:', info);
+            
+            // Update page content
+            document.getElementById('chartTitle').textContent = info.title;
+            document.getElementById('chartStatus').textContent = info.status;
+            document.getElementById('chartDescription').textContent = info.description;
+            document.getElementById('chartGuide').innerHTML = info.guide;
+            document.getElementById('chartWarnings').innerHTML = info.warnings;
+            document.getElementById('chartInsights').innerHTML = info.insights;
+            
+            // Initialize the chart
+            initDetailChart();
+        }
+        
+        // Initialize the specific chart
+        function initDetailChart() {
+            const ctx = document.getElementById('detailChart');
+            if (!ctx) return;
+            
+            // Create chart based on type
+            switch(chartType) {
+                case 'threat-timeline':
+                    createTimelineChart(ctx);
+                    break;
+                case 'threat-distribution':
+                    createDistributionChart(ctx);
+                    break;
+                case 'system-performance':
+                    createPerformanceChart(ctx);
+                    break;
+                case 'geographic':
+                    createGeographicChart(ctx);
+                    break;
+                case 'network-traffic':
+                    createNetworkChart(ctx);
+                    break;
+                case 'security-score':
+                    createSecurityChart(ctx);
+                    break;
+            }
+        }
+        
+        // Chart creation functions
+        function createTimelineChart(ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['9 AM', '10 AM', '11 AM', '12 PM', '1 PM', '2 PM', '3 PM', '4 PM', '5 PM'],
+                    datasets: [{
+                        label: 'Brute Force Attacks',
+                        data: [12, 19, 15, 25, 22, 18, 28, 15, 10],
+                        borderColor: '#ff006e',
+                        backgroundColor: 'rgba(255, 0, 110, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Malware Detections',
+                        data: [8, 12, 10, 15, 18, 12, 20, 10, 6],
+                        borderColor: '#ff6b9d',
+                        backgroundColor: 'rgba(255, 107, 157, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Data Theft Attempts',
+                        data: [5, 8, 6, 10, 12, 8, 15, 8, 4],
+                        borderColor: '#ffd60a',
+                        backgroundColor: 'rgba(255, 214, 10, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#e0e6ed' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#b8c6db' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
+                        y: { ticks: { color: '#b8c6db' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
+                    }
+                }
+            });
+        }
+        
+        function createDistributionChart(ctx) {
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Brute Force', 'Malware', 'Data Theft', 'Insider Threat'],
+                    datasets: [{
+                        data: [35, 25, 20, 20],
+                        backgroundColor: ['#ff006e', '#ff6b9d', '#ffd60a', '#06ffa5'],
+                        borderWidth: 2,
+                        borderColor: '#0f0f23'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#e0e6ed', padding: 20 } }
+                    }
+                }
+            });
+        }
+        
+        function createPerformanceChart(ctx) {
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['CPU', 'Memory', 'Network', 'Disk', 'Security', 'Uptime'],
+                    datasets: [{
+                        label: 'Current Performance',
+                        data: [85, 70, 90, 65, 95, 98],
+                        borderColor: '#06ffa5',
+                        backgroundColor: 'rgba(6, 255, 165, 0.2)',
+                        pointBackgroundColor: '#06ffa5',
+                        pointBorderColor: '#ffffff',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#e0e6ed' } }
+                    },
+                    scales: {
+                        r: {
+                            ticks: { color: '#b8c6db', backdropColor: 'transparent' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                            pointLabels: { color: '#e0e6ed' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function createGeographicChart(ctx) {
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['USA', 'China', 'Russia', 'Brazil', 'India', 'Germany'],
+                    datasets: [{
+                        label: 'Threat Origins',
+                        data: [45, 38, 32, 28, 25, 18],
+                        backgroundColor: ['#ff006e', '#ff6b9d', '#ffd60a', '#06ffa5', '#7c3aed', '#c77dff'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#e0e6ed' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#b8c6db' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
+                        y: { ticks: { color: '#b8c6db' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
+                    }
+                }
+            });
+        }
+        
+        function createNetworkChart(ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['10:00', '10:05', '10:10', '10:15', '10:20', '10:25', '10:30'],
+                    datasets: [{
+                        label: 'Inbound (MB/s)',
+                        data: [45, 52, 48, 61, 55, 67, 58],
+                        borderColor: '#06ffa5',
+                        backgroundColor: 'rgba(6, 255, 165, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Outbound (MB/s)',
+                        data: [28, 35, 32, 42, 38, 45, 40],
+                        borderColor: '#7c3aed',
+                        backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#e0e6ed' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#b8c6db' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
+                        y: { ticks: { color: '#b8c6db' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
+                    }
+                }
+            });
+        }
+        
+        function createSecurityChart(ctx) {
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [94, 6],
+                        backgroundColor: ['#06ffa5', 'rgba(255, 255, 255, 0.1)'],
+                        borderWidth: 0,
+                        cutout: '80%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    }
+                },
+                plugins: [{
+                    beforeDraw: function(chart) {
+                        const width = chart.width,
+                              height = chart.height,
+                              ctx = chart.ctx;
+                        ctx.restore();
+                        const fontSize = (height / 114).toFixed(2);
+                        ctx.font = fontSize + "em sans-serif";
+                        ctx.textBaseline = "middle";
+                        ctx.fillStyle = "#06ffa5";
+                        const text = "94%",
+                              textX = Math.round((width - ctx.measureText(text).width) / 2),
+                              textY = height / 2;
+                        ctx.fillText(text, textX, textY);
+                        ctx.save();
+                    }
+                }]
+            });
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initDetailPage);
+    </script>
+</body>
+</html>

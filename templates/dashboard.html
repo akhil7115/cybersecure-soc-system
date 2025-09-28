@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberSecure SOC - AI/ML Threat Detection System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">CyberSecure SOC</div>
+            <ul>
+                <li><a href="#dashboard">Dashboard</a></li>
+                <li><a href="#threats">Threats</a></li>
+                <li><a href="#logs">Logs</a></li>
+                <li><a href="#alerts">Alerts</a></li>
+                <li><a href="#analytics">Analytics</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="dashboard" class="dashboard">
+            <h1>Security Operations Center Dashboard</h1>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Active Threats</h3>
+                    <span class="stat-number" id="activeThreats">0</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Logs Processed</h3>
+                    <span class="stat-number" id="logsProcessed">0</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Alerts Generated</h3>
+                    <span class="stat-number" id="alertsGenerated">0</span>
+                </div>
+                <div class="stat-card">
+                    <h3>System Status</h3>
+                    <span class="status-indicator" id="systemStatus">Online</span>
+                </div>
+            </div>
+
+            <div id="threats" class="threat-detection">
+                <h2>🤖 AI/ML Threat Detection Engine</h2>
+                <p class="section-description">Our smart system watches for cyber attacks 24/7 and alerts you instantly</p>
+                <div class="detection-grid">
+                    <div class="detection-card" data-threat="brute-force">
+                        <div class="threat-icon">🔐</div>
+                        <h3>Password Attack Protection</h3>
+                        <p class="threat-description">Stops hackers trying to guess passwords</p>
+                        <div class="threat-status">👁️ Watching for attacks</div>
+                        <div class="threat-count">Attempts blocked today: <span id="bruteForceCount">0</span></div>
+                        <button onclick="simulateThreat('brute-force')">🚨 Test Attack Detection</button>
+                    </div>
+                    <div class="detection-card" data-threat="insider-threat">
+                        <div class="threat-icon">👤</div>
+                        <h3>Employee Activity Monitor</h3>
+                        <p class="threat-description">Detects when employees access files they shouldn't</p>
+                        <div class="threat-status">👁️ Monitoring file access</div>
+                        <div class="threat-count">Suspicious activities: <span id="insiderCount">0</span></div>
+                        <button onclick="simulateThreat('insider-threat')">🚨 Test Insider Detection</button>
+                    </div>
+                    <div class="detection-card" data-threat="data-exfiltration">
+                        <div class="threat-icon">📤</div>
+                        <h3>Data Theft Prevention</h3>
+                        <p class="threat-description">Stops people from stealing company data</p>
+                        <div class="threat-status">👁️ Watching data transfers</div>
+                        <div class="threat-count">Large transfers blocked: <span id="exfiltrationCount">0</span></div>
+                        <button onclick="simulateThreat('data-exfiltration')">🚨 Test Data Protection</button>
+                    </div>
+                    <div class="detection-card" data-threat="malware">
+                        <div class="threat-icon">🦠</div>
+                        <h3>Virus & Malware Shield</h3>
+                        <p class="threat-description">Finds and stops computer viruses automatically</p>
+                        <div class="threat-status">👁️ Scanning for viruses</div>
+                        <div class="threat-count">Threats removed: <span id="malwareCount">0</span></div>
+                        <button onclick="simulateThreat('malware')">🚨 Test Virus Detection</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="analytics" class="analytics-section">
+            <h2>📊 Advanced Security Analytics</h2>
+            <p class="section-description">Real-time visual analytics and threat intelligence graphs</p>
+            
+            <div class="charts-grid">
+                <div class="chart-container" onclick="openChartDetails('threat-timeline')">
+                    <div class="chart-header">
+                        <h3>🔥 Threat Activity Timeline</h3>
+                        <span class="chart-status live">LIVE</span>
+                    </div>
+                    <canvas id="threatTimelineChart"></canvas>
+                </div>
+                
+                <div class="chart-container" onclick="openChartDetails('threat-distribution')">
+                    <div class="chart-header">
+                        <h3>🎯 Threat Distribution</h3>
+                        <span class="chart-status">Real-time</span>
+                    </div>
+                    <canvas id="threatDistributionChart"></canvas>
+                </div>
+                
+                <div class="chart-container" onclick="openChartDetails('system-performance')">
+                    <div class="chart-header">
+                        <h3>📈 System Performance</h3>
+                        <span class="chart-status">Monitoring</span>
+                    </div>
+                    <canvas id="systemPerformanceChart"></canvas>
+                </div>
+                
+                <div class="chart-container" onclick="openChartDetails('geographic')">
+                    <div class="chart-header">
+                        <h3>🌍 Geographic Threats</h3>
+                        <span class="chart-status">Global</span>
+                    </div>
+                    <canvas id="geographicChart"></canvas>
+                </div>
+                
+                <div class="chart-container wide" onclick="openChartDetails('network-traffic')">
+                    <div class="chart-header">
+                        <h3>⚡ Network Traffic Analysis</h3>
+                        <span class="chart-status live">LIVE STREAM</span>
+                    </div>
+                    <canvas id="networkTrafficChart"></canvas>
+                </div>
+                
+                <div class="chart-container" onclick="openChartDetails('security-score')">
+                    <div class="chart-header">
+                        <h3>🛡️ Security Score</h3>
+                        <span class="chart-status">Current: 94%</span>
+                    </div>
+                    <canvas id="securityScoreChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="logs" class="logs-section">
+            <h2>📊 Live Security Activity Feed</h2>
+            <p class="section-description">Real-time view of what's happening on your network right now</p>
+            <div class="log-sources">
+                <div class="source-card">🔥 Firewall Protection</div>
+                <div class="source-card">💻 Computer Monitoring</div>
+                <div class="source-card">⚙️ System Health</div>
+            </div>
+            <div class="log-controls">
+                <div class="live-indicator">
+                    <span class="pulse-dot"></span>
+                    <span>LIVE - Updates every 2 seconds</span>
+                </div>
+                <div class="log-stats">
+                    <span>📈 Events today: <strong id="todayEvents">0</strong></span>
+                    <span>⚡ Last update: <strong id="lastUpdate">Never</strong></span>
+                </div>
+            </div>
+            <div class="log-display" id="logDisplay">
+                <div class="log-placeholder">🔍 Waiting for security events...</div>
+            </div>
+        </section>
+
+        <section id="alerts" class="alerts-section">
+            <h2>🚨 Security Alerts & Smart Response</h2>
+            <p class="section-description">When threats are found, we show them here and suggest actions to stop them</p>
+            <div class="alerts-container" id="alertsContainer">
+                <div class="no-alerts">
+                    <div class="no-alerts-icon">✅</div>
+                    <h3>All Clear!</h3>
+                    <p>No security threats detected. Your system is safe.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

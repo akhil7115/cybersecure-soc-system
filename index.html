@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="description" content="Advanced AI/ML-powered cybersecurity threat detection and response system">
+    <meta name="theme-color" content="#00d4ff">
+    <title>CyberSecure SOC - AI/ML Threat Detection System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <style>
+        /* Critical CSS for faster loading */
+        body { margin: 0; background: #0a0a0a; color: white; font-family: system-ui, -apple-system, sans-serif; }
+        .loading-placeholder { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">CyberSecure SOC</div>
+            <ul>
+                <li><a href="#dashboard">Dashboard</a></li>
+                <li><a href="#threats">Threats</a></li>
+                <li><a href="#logs">Logs</a></li>
+                <li><a href="#alerts">Alerts</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="dashboard" class="dashboard">
+            <h1>Security Operations Center Dashboard</h1>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Active Threats</h3>
+                    <span class="stat-number" id="activeThreats">0</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Logs Processed</h3>
+                    <span class="stat-number" id="logsProcessed">0</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Alerts Generated</h3>
+                    <span class="stat-number" id="alertsGenerated">0</span>
+                </div>
+                <div class="stat-card">
+                    <h3>System Status</h3>
+                    <span class="status-indicator" id="systemStatus">Online</span>
+                </div>
+            </div>
+
+            <div class="threat-detection">
+                <h2>🤖 AI/ML Threat Detection Engine</h2>
+                <p class="section-description">Advanced machine learning algorithms continuously monitor your network for suspicious activities and potential security threats.</p>
+                <div class="detection-grid">
+                    <div class="detection-card" data-threat="brute-force">
+                        <div class="threat-icon">🔐</div>
+                        <h3>Brute Force Detection</h3>
+                        <div class="threat-description">Detects repeated login attempts from suspicious sources</div>
+                        <div class="threat-count">Attempts Blocked: <span id="bruteForceCount">0</span></div>
+                        <div class="threat-status">👁️ Watching for attacks</div>
+                        <button onclick="simulateThreat('brute-force')">Simulate Attack</button>
+                    </div>
+                    <div class="detection-card" data-threat="insider-threat">
+                        <div class="threat-icon">👤</div>
+                        <h3>Insider Privilege Misuse</h3>
+                        <div class="threat-description">Monitors unusual employee access patterns</div>
+                        <div class="threat-count">Incidents Found: <span id="insiderCount">0</span></div>
+                        <div class="threat-status">👁️ Watching for attacks</div>
+                        <button onclick="simulateThreat('insider-threat')">Simulate Attack</button>
+                    </div>
+                    <div class="detection-card" data-threat="data-exfiltration">
+                        <div class="threat-icon">📤</div>
+                        <h3>Data Exfiltration</h3>
+                        <div class="threat-description">Identifies large data transfers to external servers</div>
+                        <div class="threat-count">Transfers Blocked: <span id="exfiltrationCount">0</span></div>
+                        <div class="threat-status">👁️ Watching for attacks</div>
+                        <button onclick="simulateThreat('data-exfiltration')">Simulate Attack</button>
+                    </div>
+                    <div class="detection-card" data-threat="malware">
+                        <div class="threat-icon">🦠</div>
+                        <h3>Malware Indicators</h3>
+                        <div class="threat-description">Scans for suspicious processes and network connections</div>
+                        <div class="threat-count">Threats Quarantined: <span id="malwareCount">0</span></div>
+                        <div class="threat-status">👁️ Watching for attacks</div>
+                        <button onclick="simulateThreat('malware')">Simulate Attack</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="logs" class="logs-section">
+            <h2>📊 Live Log Ingestion</h2>
+            <div class="log-controls">
+                <div class="live-indicator">
+                    <div class="pulse-dot"></div>
+                    <span>Live Feed Active</span>
+                </div>
+                <div class="log-stats">
+                    <span>Today's Events: <strong id="todayEvents">0</strong></span>
+                    <span>Last Update: <strong id="lastUpdate">--:--:--</strong></span>
+                </div>
+            </div>
+            <div class="log-sources">
+                <div class="source-card">🔥 Firewall Logs</div>
+                <div class="source-card">💻 Endpoint Logs</div>
+                <div class="source-card">☁️ Cloud Application Logs</div>
+            </div>
+            <div class="log-display" id="logDisplay">
+                <div class="log-placeholder">
+                    <p>🔍 Monitoring network activity...</p>
+                    <p>Real-time logs will appear here</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="alerts" class="alerts-section">
+            <h2>🚨 Security Alerts & Automated Response</h2>
+            <div class="alert-summary">
+                <div class="alert-stat critical">
+                    <span class="alert-count" id="criticalAlerts">0</span>
+                    <span>Critical</span>
+                </div>
+                <div class="alert-stat warning">
+                    <span class="alert-count" id="warningAlerts">0</span>
+                    <span>Warning</span>
+                </div>
+                <div class="alert-stat info">
+                    <span class="alert-count" id="infoAlerts">0</span>
+                    <span>Info</span>
+                </div>
+            </div>
+            <div class="alerts-container" id="alertsContainer">
+                <div class="no-alerts">
+                    <div class="no-alerts-icon">✅</div>
+                    <h3>All Systems Secure</h3>
+                    <p>No active security threats detected</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="performance.js"></script>
+    <script src="script.js"></script>
+    
+    <!-- Service Worker for offline capability -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => console.log('SW registered'))
+                    .catch(error => console.log('SW registration failed'));
+            });
+        }
+    </script>
+</body>
+</html>
