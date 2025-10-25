@@ -30,3 +30,9 @@ Thumbs.db
 # Documentation files (keep local only)
 README.md
 TUTORIAL.md
+# Duplicate/unnecessary files
+index.html
+index.py
+script.js
+style.css
+sw.js
