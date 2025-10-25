@@ -27,3 +27,6 @@ Thumbs.db
 
 # Logs
 *.log
+# Documentation files (keep local only)
+README.md
+TUTORIAL.md
